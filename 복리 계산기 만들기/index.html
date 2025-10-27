@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>나의 금융 연대기 - 복리 계산기</title>
+    <link rel="stylesheet" href="assets/css/main.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <h1 class="logo">
+                <i class="fas fa-chart-line"></i>
+                나의 금융 연대기
+            </h1>
+            <nav class="nav">
+                <button class="nav-btn active" data-section="calculator">복리 계산기</button>
+                <button class="nav-btn" data-section="planner">라이프 플래너</button>
+                <button class="nav-btn" data-section="report">연대기 생성</button>
+            </nav>
+        </div>
+    </header>
+
+    <main class="main">
+        <!-- 복리 계산기 섹션 -->
+        <section id="calculator" class="section active">
+            <div class="container">
+                <div class="section-header">
+                    <h2>복리 계산기</h2>
+                    <p>시간의 마법, 복리의 힘을 체험해보세요</p>
+                </div>
+
+                <div class="calculator-grid">
+                    <div class="input-panel">
+                        <div class="input-group">
+                            <label for="initial-amount">초기 금액</label>
+                            <div class="input-with-unit">
+                                <input type="number" id="initial-amount" value="1000000" min="1000">
+                                <span class="unit">원</span>
+                            </div>
+                        </div>
+
+                        <div class="input-group">
+                            <label for="monthly-investment">월 투자액</label>
+                            <div class="input-with-unit">
+                                <input type="number" id="monthly-investment" value="100000" min="0">
+                                <span class="unit">원</span>
+                            </div>
+                        </div>
+
+                        <div class="input-group">
+                            <label for="period">투자 기간</label>
+                            <div class="input-with-unit">
+                                <input type="number" id="period" value="20" min="1" max="50">
+                                <span class="unit">년</span>
+                            </div>
+                        </div>
+
+                        <div class="input-group">
+                            <label for="interest-rate">연 수익률</label>
+                            <div class="input-with-unit">
+                                <input type="number" id="interest-rate" value="7" min="0.1" max="30" step="0.1">
+                                <span class="unit">%</span>
+                            </div>
+                        </div>
+
+                        <button class="calculate-btn" onclick="calculateCompoundInterest()">
+                            <i class="fas fa-calculator"></i>
+                            계산하기
+                        </button>
+
+                        <div class="rule-of-72">
+                            <h4><i class="fas fa-lightbulb"></i> 72의 법칙</h4>
+                            <p id="rule-result">연 7% 수익률로 투자하면 약 <strong>10.3년</strong>만에 원금이 2배가 됩니다.</p>
+                        </div>
+                    </div>
+
+                    <div class="result-panel">
+                        <div class="result-summary">
+                            <div class="result-item">
+                                <span class="label">총 투자원금</span>
+                                <span class="value" id="total-investment">25,000,000원</span>
+                            </div>
+                            <div class="result-item">
+                                <span class="label">투자 수익</span>
+                                <span class="value profit" id="total-profit">35,720,458원</span>
+                            </div>
+                            <div class="result-item final">
+                                <span class="label">최종 금액</span>
+                                <span class="value" id="final-amount">60,720,458원</span>
+                            </div>
+                        </div>
+
+                        <div class="chart-container">
+                            <canvas id="compound-chart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 라이프 플래너 섹션 -->
+        <section id="planner" class="section">
+            <div class="container">
+                <div class="section-header">
+                    <h2>인생 재무 계획</h2>
+                    <p>인생의 중요한 순간들과 재무 목표를 설정해보세요</p>
+                </div>
+
+                <div class="planner-grid">
+                    <div class="life-events">
+                        <h3><i class="fas fa-calendar-alt"></i> 인생 이벤트</h3>
+                        <div class="event-form">
+                            <input type="text" id="event-name" placeholder="이벤트 이름 (예: 결혼, 내집마련)">
+                            <input type="number" id="event-year" placeholder="년도" min="2025" max="2070">
+                            <input type="number" id="event-amount" placeholder="필요 금액 (원)">
+                            <button onclick="addLifeEvent()">
+                                <i class="fas fa-plus"></i> 추가
+                            </button>
+                        </div>
+                        <div class="events-list" id="events-list">
+                            <!-- 동적으로 생성될 이벤트 목록 -->
+                        </div>
+                    </div>
+
+                    <div class="timeline-container">
+                        <h3><i class="fas fa-timeline"></i> 재무 타임라인</h3>
+                        <div class="timeline" id="timeline">
+                            <!-- 동적으로 생성될 타임라인 -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 연대기 생성 섹션 -->
+        <section id="report" class="section">
+            <div class="container">
+                <div class="section-header">
+                    <h2>나의 금융 연대기</h2>
+                    <p>개인 맞춤형 재무 보고서를 PDF로 다운로드하세요</p>
+                </div>
+
+                <div class="report-preview">
+                    <div class="preview-header">
+                        <h3><i class="fas fa-file-pdf"></i> 미리보기</h3>
+                        <button class="generate-pdf-btn" onclick="generatePDF()">
+                            <i class="fas fa-download"></i> PDF 다운로드
+                        </button>
+                    </div>
+
+                    <div class="pdf-preview">
+                        <div class="pdf-page">
+                            <div class="pdf-cover">
+                                <h1>나의 금융 연대기</h1>
+                                <h2>개인 재무 분석 보고서</h2>
+                                <div class="report-date" id="report-date"></div>
+                                <div class="report-summary">
+                                    <div class="summary-item">
+                                        <span>투자 시작 연도</span>
+                                        <span id="start-year">2025</span>
+                                    </div>
+                                    <div class="summary-item">
+                                        <span>투자 기간</span>
+                                        <span id="investment-period">20년</span>
+                                    </div>
+                                    <div class="summary-item">
+                                        <span>목표 수익률</span>
+                                        <span id="target-return">7%</span>
+                                    </div>
+                                    <div class="summary-item">
+                                        <span>예상 최종 자산</span>
+                                        <span id="projected-assets">60,720,458원</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2025 나의 금융 연대기. 당신의 재무 자유를 응원합니다.</p>
+        </div>
+    </footer>
+
+    <!-- 외부 라이브러리 -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+    
+    <!-- 한글 폰트가 포함된 jsPDF 추가 -->
+    <script>
+        // 한글 지원을 위한 설정
+        if (typeof window.jspdf !== 'undefined') {
+            const { jsPDF } = window.jspdf;
+            // 기본 한글 지원 설정
+            jsPDF.API.textWithLink = function(text, x, y, options) {
+                this.text(text, x, y, options);
+            };
+        }
+    </script>
+    
+    <!-- 로컬 스크립트 -->
+    <script src="assets/js/calculator.js"></script>
+    <script src="assets/js/planner.js"></script>
+    <script src="assets/js/pdf-generator.js"></script>
+    <script src="assets/js/main.js"></script>
+</body>
+</html>
